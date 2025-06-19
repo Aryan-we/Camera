@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Camera App</title>
+  <style>
+    video, canvas {
+      width: 100%;
+      max-width: 320px;
+      border-radius: 8px;
+      margin: 10px 0;
+      border: 2px solid #444;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<h2>Camera Capture with Start, Stop, and Click</h2>
+
+<video id="video" autoplay playsinline></video><br>
+<button onclick="startCamera()">Start Camera</button>
+<button onclick="stopCamera()">Stop Camera</button>
+<button onclick="takePhoto()">Click Photo</button><br>
+<canvas id="canvas"></canvas>
+
+<script>
+  const video = document.getElementById('video');
+  const canvas = document.getElementById('canvas');
+  let stream = null;
+
+  async function startCamera() {
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+      video.srcObject = stream;
+    } catch (err) {
+      alert("Error accessing camera: " + err.message);
+    }
+  }
+
+  function stopCamera() {
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      video.srcObject = null;
+    }
+  }
+
+  function takePhoto() {
+    if (!stream) {
+      alert("Camera is not active.");
+      return;
+    }
+    const context = canvas.getContext('2d');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  }
+</script>
+
+</body>
+</html>
